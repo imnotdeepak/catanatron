@@ -694,6 +694,17 @@ def _game_in_action_phase(seat):
     return game
 
 
+def test_only_active_player_can_win():
+    game = _game_in_action_phase(0)
+    state = game.state
+    state.player_state["P1_ACTUAL_VICTORY_POINTS"] = 10
+    assert game.winning_color() is None
+
+    # They win once their own turn begins, if they still have the points.
+    game.execute(Action(state.colors[0], ActionType.END_TURN, None))
+    assert game.winning_color() == state.colors[1]
+
+
 def test_offering_player_is_not_asked_to_respond():
     game = _game_in_action_phase(2)
     state = game.state
